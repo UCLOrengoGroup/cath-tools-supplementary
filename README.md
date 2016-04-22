@@ -1,5 +1,5 @@
 # cath-tools-supplementary
-Supplementary materials for UCLOrengoGroup/cath-tools
+Supplementary materials for [cath-tools](https://github.com/UCLOrengoGroup/cath-tools)
 
 Overview of contents
 -----
