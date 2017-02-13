@@ -18,4 +18,4 @@ set key font ",11"
 set key spacing 0.7
 set xtics font "Helvetica,18"
 set ytics font "Helvetica,18"
-plot 1-x with lines               lc rgb "#EEEEEE" notitle, x   with filledcurves y1 = 0 lc rgb "#EEEEEE" notitle,  'curve_data.old.roc'  with lines  linetype 1 linecolor rgb "red"  linewidth 3  title 'Old cath-ssap results',  'curve_data.new.roc'  with lines  linetype 1 linecolor rgb "blue" linewidth 3  title 'New cath-ssap results'
+plot 1-x with lines               lc rgb "#EEEEEE" notitle, x   with filledcurves y1 = 0 lc rgb "#EEEEEE" notitle,  'results_sets/v0.12.24-21-g06fbfeb_PDB_DSSP_SEC.sorted_roc_data.roc'  with lines  linetype 1 linecolor rgb "red"  linewidth 3  title 'cath-ssap v0.12.24-21-g06fbfeb using PDB+DSSP+SEC',  'results_sets/v0.12.24-21-g06fbfeb_PDB_DSSP.sorted_roc_data.roc'  with lines  linetype 1 linecolor rgb "blue" linewidth 3  title 'cath-ssap v0.12.24-21-g06fbfeb using PDB+DSSP'
