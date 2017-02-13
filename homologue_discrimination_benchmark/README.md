@@ -1,47 +1,53 @@
 ROC Regression Benchmark
 ========================
 
-Generate results for benchmark ("old") version of cath-ssap:
+To generate a results-set, set the appropriate environment variables:
 
 ~~~~~
-mkdir old_ssap_results
-ln -s /the/path/to/the/old/cath-ssap cath-ssap.old
-awk '{print "cd '$PWD'/old_ssap_results ; '$PWD'/cath-ssap.old " $1 " " $2 " > " $1 "_" $2 ".old_scores"}' < pair_list.labelled > old_ssap_results/old_ssap_results.commands
+setenv HOM_BNCHMK_ROOTDIR $PWD
+setenv HOM_BNCHMK_SRC_EXE /the/path/to/the/old/cath-ssap
+setenv HOM_BNCHMK_ARGS    
+setenv HOM_BNCHMK_VN_NAME SSAP.r18631
+~~~~~
+
+...and then execute the following:
+
+~~~~~
+setenv HOM_BNCHMK_RES_DIR $HOM_BNCHMK_ROOTDIR/${HOM_BNCHMK_VN_NAME}_results_dir
+setenv HOM_BNCHMK_EXE_LN  $HOM_BNCHMK_ROOTDIR/$HOM_BNCHMK_VN_NAME
+
+echo $HOM_BNCHMK_ROOTDIR
+echo $HOM_BNCHMK_SRC_EXE
+echo $HOM_BNCHMK_ARGS
+echo $HOM_BNCHMK_VN_NAME
+echo $HOM_BNCHMK_RES_DIR
+echo $HOM_BNCHMK_EXE_LN
+
+mkdir -p $HOM_BNCHMK_RES_DIR
+ln -s $HOM_BNCHMK_SRC_EXE $HOM_BNCHMK_EXE_LN
+awk '{print "cd '$HOM_BNCHMK_RES_DIR' ; '$HOM_BNCHMK_ROOTDIR/$HOM_BNCHMK_VN_NAME' " $1 " " $2 " > " $1 "_" $2 ".scores"}' < $HOM_BNCHMK_ROOTDIR/pair_list.labelled > $HOM_BNCHMK_RES_DIR/ssap.commands
 setenv DOMDIR                /cath/data/v4_0_0/pdb
 setenv PDBDIR                /cath/data/v4_0_0/pdb
 setenv SECDIR                /cath/data/v4_0_0/sec
 setenv WOLFDIR               /cath/data/v4_0_0/wolf
-setenv CATH_TOOLS_PDB_PATH   .:/cath/data/v4_0_0/pdb
-setenv CATH_TOOLS_DSSP_PATH  .:/cath/data/v4_0_0/dssp
-setenv CATH_TOOLS_WOLF_PATH  .:/cath/data/v4_0_0/wolf
-setenv CATH_TOOLS_SEC_PATH   .:/cath/data/v4_0_0/sec
-nohup cat old_ssap_results.commands | xargs -I VAR -P 9 /bin/tcsh -c "VAR" > & ssap_commands.out &
+setenv CATH_TOOLS_PDB_PATH   /cath/data/v4_0_0/pdb
+setenv CATH_TOOLS_DSSP_PATH  /cath/data/v4_0_0/dssp
+setenv CATH_TOOLS_WOLF_PATH  /cath/data/v4_0_0/wolf
+setenv CATH_TOOLS_SEC_PATH   /cath/data/v4_0_0/sec
+nohup cat $HOM_BNCHMK_RES_DIR/ssap.commands | xargs -I VAR -P 9 /bin/tcsh -c "VAR" > & $HOM_BNCHMK_ROOTDIR/${HOM_BNCHMK_VN_NAME}.ssap.commands.out &
 ~~~~~
 
-Generate results for modified ("new") version of cath-ssap:
-
-~~~~~
-mkdir new_ssap_results
-ln -s /the/path/to/the/new/cath-ssap cath-ssap.new
-awk '{print "cd '$PWD'/new_ssap_results ; '$PWD'/cath-ssap.new " $1 " " $2 " > " $1 "_" $2 ".new_scores"}' < pair_list.labelled > new_ssap_results/new_ssap_results.commands
-setenv DOMDIR                /cath/data/v4_0_0/pdb
-setenv PDBDIR                /cath/data/v4_0_0/pdb
-setenv SECDIR                /cath/data/v4_0_0/sec
-setenv WOLFDIR               /cath/data/v4_0_0/wolf
-setenv CATH_TOOLS_PDB_PATH   .:/cath/data/v4_0_0/pdb
-setenv CATH_TOOLS_DSSP_PATH  .:/cath/data/v4_0_0/dssp
-setenv CATH_TOOLS_WOLF_PATH  .:/cath/data/v4_0_0/wolf
-setenv CATH_TOOLS_SEC_PATH   .:/cath/data/v4_0_0/sec
-nohup cat new_ssap_results.commands | xargs -I VAR -P 9 /bin/tcsh -c "VAR" > & ssap_commands.out &
-~~~~~
-
-Generate data files that are sorted for joining by `join` command:
+When that's finished, generate data files that are sorted for joining by `join` command:
 
 ~~~~~
 awk '{print $1 "_" $2 " " $3}' < pair_list.labelled          | sort -k 1b,1 > pair_list.labelled.join_sorted
-awk '{print $1 "_" $2 " " $5}' old_ssap_results/*.old_scores | sort -k 1b,1 > scores.old
-awk '{print $1 "_" $2 " " $5}' new_ssap_results/*.new_scores | sort -k 1b,1 > scores.new
+
+setenv HOM_BNCHMK_RES_DIR $HOM_BNCHMK_ROOTDIR/${HOM_BNCHMK_VN_NAME}_results_dir
+cat ${HOM_BNCHMK_RES_DIR}/*.scores | awk '{print $1 "_" $2 " " $0}' | sort -k 1b,1 > results_sets/${HOM_BNCHMK_VN_NAME}.full
+awk '{print $1 " " $6}' < results_sets/${HOM_BNCHMK_VN_NAME}.full > results_sets/${HOM_BNCHMK_VN_NAME}.scores_only
 ~~~~~~
+
+Once you're sure that data is complete and backed up, you can delete everything except the files in `results_sets`.
 
 Create scatter plot data and plot it:
 
