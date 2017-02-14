@@ -1,7 +1,7 @@
 set   terminal postscript eps enhanced color
 set   output "precision_recall_curve.eps"
-set xlabel 'Precision' font "Helvetica,20"
-set ylabel 'Recall' font "Helvetica,20"
+set xlabel 'Recall' font "Helvetica,20"
+set ylabel 'Precision' font "Helvetica,20"
 
 set size square 2,2
 set xtics 0,10
@@ -18,4 +18,4 @@ set key font ",11"
 set key spacing 0.7
 set xtics font "Helvetica,18"
 set ytics font "Helvetica,18"
-plot 50 with filledcurves y1 = 0 lc rgb "#EEEEEE" notitle,  'results_sets/v0.12.24-21-g06fbfeb_PDB_DSSP_SEC.sorted_roc_data.prec_rec'  with lines  linetype 1 linecolor rgb "red"  linewidth 3  title 'cath-ssap v0.12.24-21-g06fbfeb using PDB+DSSP+SEC',  'results_sets/v0.12.24-21-g06fbfeb_PDB_DSSP.sorted_roc_data.prec_rec'  with lines  linetype 1 linecolor rgb "blue" linewidth 3  title 'cath-ssap v0.12.24-21-g06fbfeb using PDB+DSSP'
+plot 50 with filledcurves y1 = 0 lc rgb "#EEEEEE" notitle, 'results_sets/SSAP.r18631.sorted_roc_data.prec_rec' with lines  linetype 1 linecolor rgb "green" linewidth 3  title 'SSAP r18631 (WOLF+SEC)', 'results_sets/v0.12.24-21-g06fbfeb_PDB_DSSP_SEC.sorted_roc_data.prec_rec'  with lines  linetype 1 linecolor rgb "red"  linewidth 3  title 'cath-ssap v0.12.24-21-g06fbfeb using PDB+DSSP+SEC',  'results_sets/v0.12.24-21-g06fbfeb_PDB_DSSP.sorted_roc_data.prec_rec'  with lines  linetype 1 linecolor rgb "blue" linewidth 3  title 'cath-ssap v0.12.24-21-g06fbfeb using PDB+DSSP'
