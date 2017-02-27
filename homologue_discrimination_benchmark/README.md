@@ -25,7 +25,7 @@ echo $HOM_BNCHMK_EXE_LN
 
 mkdir -p $HOM_BNCHMK_RES_DIR
 ln -s $HOM_BNCHMK_SRC_EXE $HOM_BNCHMK_EXE_LN
-awk '{print "cd '$HOM_BNCHMK_RES_DIR' ; '$HOM_BNCHMK_ROOTDIR/$HOM_BNCHMK_VN_NAME' " $1 " " $2 " > " $1 "_" $2 ".scores"}' < $HOM_BNCHMK_ROOTDIR/pair_list.labelled > $HOM_BNCHMK_RES_DIR/ssap.commands
+awk '{print "cd '$HOM_BNCHMK_RES_DIR' ; '$HOM_BNCHMK_ROOTDIR/$HOM_BNCHMK_VN_NAME' '"$HOM_BNCHMK_ARGS"' " $1 " " $2 " > " $1 "_" $2 ".scores"}' < $HOM_BNCHMK_ROOTDIR/pair_list.labelled > $HOM_BNCHMK_RES_DIR/ssap.commands
 setenv DOMDIR                /cath/data/v4_0_0/pdb
 setenv PDBDIR                /cath/data/v4_0_0/pdb
 setenv SECDIR                /cath/data/v4_0_0/sec
