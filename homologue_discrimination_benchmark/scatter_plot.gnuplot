@@ -1,8 +1,8 @@
 set terminal postscript eps enhanced color
 set output "scatter_plot.eps"
 #set title 'Comparison of versions of SSAP on identical pairs' font "Helvetica,35"
-set xlabel 'cath-ssap v0.12.24-21-g06fbfeb using PDB+DSSP+SEC' font "Helvetica,25"
-set ylabel 'cath-ssap v0.12.24-21-g06fbfeb using PDB+DSSP' font "Helvetica,25"
+set xlabel 'PDB+DSSP' font "Helvetica,25"
+set ylabel 'PDB' font "Helvetica,25"
 
 set size square 3
 #set xtics 0,0.1
@@ -19,4 +19,4 @@ set key font ",11"
 set key spacing 0.7
 set xtics font "Helvetica,18"
 set ytics font "Helvetica,18"
-plot x with lines lc rgb "#EEEEEE" notitle, 'scatter_plot.positive_data'  with points pointtype 7 pointsize 0.2 lc rgb '#006600' title 'Homologue pairs', 'scatter_plot.negative_data'  with points pointtype 7 pointsize 0.2 lc rgb '#660000' title 'Non-homologue pairs'
+plot x with lines lc rgb "#EEEEEE" notitle, 'scatter_plot.drop_dssp.positive_data'  with points pointtype 7 pointsize 0.2 lc rgb '#006600' title 'Homologue pairs', 'scatter_plot.drop_dssp.negative_data'  with points pointtype 7 pointsize 0.2 lc rgb '#660000' title 'Non-homologue pairs'
