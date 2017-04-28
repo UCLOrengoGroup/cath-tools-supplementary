@@ -2,7 +2,14 @@
 
 @jonglees has provided the titin data provided here (thanks Jon!).
 
-The original motivation was for comparing CRH's performance to DF3's. However it's also showing CRH running quite a bit slower than previously seen: ~300k hits/s rather than ~1m-2m hits/s. On investigation, it appears that this is just due to this titin data being more interesting, structured data was previously being used. This makes it a good example for benchmarking performance.
+The original motivation was for comparing CRH's performance to DF3's. However it has also guided improvements to CRH's speed because it showed CRH running substantially slower than previously seen and this was apparently due to this titin data being more interesting, structured data was previously being used. This makes it a good example for benchmarking performance.
+
+## General benchmarking advice
+
+ * Do timings using executables and data in `/dev/shm` to minimise the effect of loading.
+ * Time using the release version because the relwithdebinfo can be huge and larger executable binaries can take longer.
+ * Increasing trimming can substantially increase runtime because it means more combinations of hits are possible and must be explored.
+ * Consider testing CRH with `--overlap-trim-spec 1/0` to keep consistent if comparing with older versions different versions (because very old had no trimming; slightly old had some 50/30; current has 30/10)
 
 ## Example Commands
 
@@ -17,10 +24,13 @@ cd /dev/shm/cath-resolve-hits-perf-test
 
 ## Performance benchmarks
 
+~~~~~
+/usr/bin/time ./cath-resolve-hits --overlap-trim-spec 1/0 titin.crh > /dev/null
+~~~~~
 
 | commit        | Build time           | runtime on titin
 |:--|:--|:--|
-| [ecb7c6f](https://github.com/UCLOrengoGroup/cath-tools/commit/ecb7c6f6fc9eceb3207db62495a80268307a8048) | 20170425 12:34:52 | ???
+| [1298bbc](https://github.com/UCLOrengoGroup/cath-tools/commit/1298bbcc636bd096d5fd00ff8c9286916f6e677d) | 20170428 18:18 | 0.26user
 
 ## Comparing DF3
 
@@ -29,5 +39,5 @@ limit memoryuse  8Gb
 limit vmemoryuse 8Gb
 limit
 
-/usr/bin/time -v /cath-tools/resolve_stuff/df3/DomainFinder3 -i titin.ssf -o titin.df3_out
+/usr/bin/time -v ./DomainFinder3 -i titin.ssf -o titin.df3_out
 ~~~
