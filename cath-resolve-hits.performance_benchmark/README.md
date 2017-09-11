@@ -41,3 +41,15 @@ limit
 
 /usr/bin/time -v ./DomainFinder3 -i titin.ssf -o titin.df3_out
 ~~~
+
+
+
+
+
+
+
+~~~
+ls -1 *.gnuplot | xargs -I VAR gnuplot VAR
+convert -background white -alpha off -trim -density 6000 -quality 100 -resize 25% multiplot.eps multiplot.jpg
+~~~
+

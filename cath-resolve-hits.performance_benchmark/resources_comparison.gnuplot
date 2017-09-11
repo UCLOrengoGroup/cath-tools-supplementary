@@ -6,11 +6,11 @@ set y2label 'CPU (seconds / 100k inputs)' font "Helvetica"
 
 set size square 0.666,0.666
 set xtics  0,100000
-set ytics  0,1
-set y2tics 0,1
+set ytics  0,5
+set y2tics 0,5
 set xrange  [0:263312]
-set yrange  [0:5]
-set y2range [0:5]
+set yrange  [0:20]
+set y2range [0:20]
 #set logscale y
 #set logscale y2
 set style line 11 lc rgb "#AAAAAA" lt 1

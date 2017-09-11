@@ -20,23 +20,38 @@ use Path::Class       qw/ dir file       /;
 # use Params::Util               qw/_INSTANCE _ARRAY _ARRAY0 _HASH _HASH0 /;
 
 my $total_num_lines  = 263312; # = 2^4 * 7 * 2351 ( so some factors include: 8, 14, 16, 28, 56)
-# my $num_parts        =     51;
-# my $num_repeats      =    100;
-# my $num_parts        =      5;
-# my $num_repeats      =      2;
-my $num_parts        =     29;
-my $num_repeats      =    100;
+
+# my $num_parts        =                    57;
+# my $num_repeats      =                   100;
+# my $max_num_lines    = $total_num_lines / 14;
+
+# my $num_parts        =                     5;
+# my $num_repeats      =                     2;
+# my $max_num_lines    = $total_num_lines /  4;
+
+
+my $num_parts        =                    29;
+my $num_repeats      =                   100;
+my $max_num_lines    =                 undef; # undef means don't limit
+
+
+my $crh_src_exe      = file( '', 'tmp', 'cath-resolve-hits.centos6.v0.14.4'             );
+my $crh_src_exe      = file( '', 'cath-tools', 'ninja_gcc_release', 'cath-resolve-hits' );
+my $df3_src_exe      = file( '', 'cath-tools', 'resolve_stuff', 'df3', 'DomainFinder3'  );
+my $src_data_dir     = dir ( '', 'cath-tools', 'resolve_stuff', 'for_tony'              );
+
+# my $crh_src_exe      = file( '/home/ucbctnl/cath-resolve-hits' );
+# my $df3_src_exe      = file( '/home/ucbctnl/DomainFinder3' );
+# my $src_data_dir     = dir ( '/home/ucbctnl' );
+
 
 my $root_dir         = dir ( '', 'dev', 'shm', 'compare_crh_df3_cpu_and_mem_usage_dir'  );
-my $src_data_dir     = dir ( '', 'cath-tools', 'resolve_stuff', 'for_tony'              );
 
 my $crh_pre_options  = [            ];
 my $df3_pre_options  = [ '--indata' ];
 my $crh_post_options = [ '--output-file' ];
 my $df3_post_options = [ '--out'         ];
 
-my $crh_src_exe      = file( '', 'cath-tools', 'ninja_gcc_release', 'cath-resolve-hits' );
-my $df3_src_exe      = file( '', 'cath-tools', 'resolve_stuff', 'df3', 'DomainFinder3'  );
 my $crh_src_data     = $src_data_dir->file( 'titin.crh' );
 my $df3_src_data     = $src_data_dir->file( 'titin.ssf' );
 
@@ -53,8 +68,10 @@ if ( ! -d $root_dir ) {
 $crh_src_exe->copy_to( $crh_exe ) or confess "Cannot copy $crh_src_exe to $crh_exe : $OS_ERROR";
 $df3_src_exe->copy_to( $df3_exe ) or confess "Cannot copy $df3_src_exe to $df3_exe : $OS_ERROR";
 
+warn localtime(time()) . " : Starting\n";
+
 foreach my $algo_data (
-                        # [ 'CRH', $crh_exe, $crh_src_data, $crh_data, $crh_pre_options, $crh_post_options ],
+                        [ 'CRH', $crh_exe, $crh_src_data, $crh_data, $crh_pre_options, $crh_post_options ],
                         [ 'DF3', $df3_exe, $df3_src_data, $df3_data, $df3_pre_options, $df3_post_options ],
                                                                                                            ) {
 	my ( $name, $exe, $src_data, $data, $pre_options, $post_options ) = @$algo_data;
@@ -68,11 +85,13 @@ foreach my $algo_data (
 		if ( $fraction == 0 ) {
 			next;
 		}
-		if ( $num_lines <= 65828 ) {
+		if ( defined( $max_num_lines ) && $num_lines > $max_num_lines ) {
 			next;
 		}
 		my $time   = 0.0;
 		my $memory = 0.0;
+
+		warn localtime(time()) . " : $name $num_lines\n";
 
 		foreach my $repeat_ctr ( 1 .. $num_repeats ) {
 			# $num_lines * $num_lines;
@@ -106,6 +125,15 @@ foreach my $algo_data (
 			if ( ! -s $output_file ) {
 				undef $time;
 				undef $memory;
+				warn localtime(time()) . ' : Attempt to run '
+					. $name
+					. ' on '
+					. $num_lines
+					. ' lines failed on repeat '
+					. $repeat_ctr
+					. ' of '
+					. $num_repeats
+					. "\n";
 				last;
 			}
 			# confess Dumper( [ $command, $stdout, $stderr ] ) . ' ';
@@ -130,6 +158,8 @@ foreach my $algo_data (
 		}
 	}
 }
+
+warn localtime(time()) . " : Finished\n";
 
 sub file_subset_copy {
 	my $source_file = shift;

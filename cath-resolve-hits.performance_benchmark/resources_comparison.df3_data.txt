@@ -1,0 +1,8 @@
+DF3 9404 0.754164894371189 2.67247299021693 # Columns: algorithm name; num input entries; time in minutes per 100k entries; memory in Gb per 100k entries.
+DF3 18808 1.49684531405076 5.06851552530838 # Columns: algorithm name; num input entries; time in minutes per 100k entries; memory in Gb per 100k entries.
+DF3 28212 2.15164941632402 7.46292924996455 # Columns: algorithm name; num input entries; time in minutes per 100k entries; memory in Gb per 100k entries.
+DF3 37616 2.81547745640153 9.86059464057848 # Columns: algorithm name; num input entries; time in minutes per 100k entries; memory in Gb per 100k entries.
+DF3 47020 3.88300368637459 12.308360017014 # Columns: algorithm name; num input entries; time in minutes per 100k entries; memory in Gb per 100k entries.
+DF3 56424 7.21468996644454 14.6962234510138 # Columns: algorithm name; num input entries; time in minutes per 100k entries; memory in Gb per 100k entries.
+DF3 65828 9.82485416540074 17.1201769459804 # Columns: algorithm name; num input entries; time in minutes per 100k entries; memory in Gb per 100k entries.
+DF3 75232 12.3983522082802 19.48221395151 # Columns: algorithm name; num input entries; time in minutes per 100k entries; memory in Gb per 100k entries.
