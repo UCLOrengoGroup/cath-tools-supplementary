@@ -154,7 +154,7 @@ foreach my $algo_data (
 			$memory /= $num_lines;
 			$memory *= 100000;  # To perform 100k entries
 			$memory /= 1000000; # From Kb to Gb
-			say "$name $num_lines $time $memory # Columns: algorithm name; num input entries; time in minutes per 100k entries; memory in seconds per 100k entries."
+			say "$name $num_lines $time $memory # Columns: algorithm name; num input entries; time in minutes per 100k entries; memory in Gb per 100k entries."
 		}
 	}
 }

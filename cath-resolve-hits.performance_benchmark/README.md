@@ -53,3 +53,16 @@ ls -1 *.gnuplot | xargs -I VAR gnuplot VAR
 convert -background white -alpha off -trim -density 6000 -quality 100 -resize 25% multiplot.eps multiplot.jpg
 ~~~
 
+=======
+## Running on UCL CS Compute Cluster
+
+qsub -b y -l 'h_rt=0:30:0,h_vmem=4G,tmem=4G,hostname=abbott*' -P cath -e ~/compare_crh_df3_cpu_and_mem_usage.4Gb_30mins.err    -o ~/compare_crh_df3_cpu_and_mem_usage.4Gb_30mins.out    /share/apps/perl/bin/perl ~/compare_crh_df3_cpu_and_mem_usage.pl
+
+~~~~
+qsub -b y -l  h_rt=0:30:0,h_vmem=4G,tmem=4G                           -e ~/compare_crh_df3_cpu_and_mem_usage.4Gb_30mins.err    -o ~/compare_crh_df3_cpu_and_mem_usage.4Gb_30mins.out    /share/apps/perl/bin/perl ~/compare_crh_df3_cpu_and_mem_usage.pl
+
+qsub -b y -l  h_rt=2:30:0,h_vmem=7G,tmem=7G                           -e ~/compare_crh_df3_cpu_and_mem_usage.7Gb_2h30m.err     -o ~/compare_crh_df3_cpu_and_mem_usage.7Gb_2h30m.out     /share/apps/perl/bin/perl ~/compare_crh_df3_cpu_and_mem_usage.pl
+qsub -b y -l  h_rt=24:0:0,h_vmem=55G,tmem=55G                         -e ~/compare_crh_df3_cpu_and_mem_usage.55Gb_24hours.err  -o ~/compare_crh_df3_cpu_and_mem_usage.55Gb_24hours.out  /share/apps/perl/bin/perl ~/compare_crh_df3_cpu_and_mem_usage.pl
+qsub -b y -l  h_rt=48:0:0,h_vmem=55G,tmem=55G                         -e ~/compare_crh_df3_cpu_and_mem_usage.55Gb_48hours.err  -o ~/compare_crh_df3_cpu_and_mem_usage.55Gb_48hours.out  /share/apps/perl/bin/perl ~/compare_crh_df3_cpu_and_mem_usage.pl
+qsub -b y -l  h_rt=72:0:0,h_vmem=120G,tmem=120G                       -e ~/compare_crh_df3_cpu_and_mem_usage.120Gb_24hours.err -o ~/compare_crh_df3_cpu_and_mem_usage.120Gb_24hours.out /share/apps/perl/bin/perl ~/compare_crh_df3_cpu_and_mem_usage.pl
+~~~~
