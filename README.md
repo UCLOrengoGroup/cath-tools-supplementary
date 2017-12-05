@@ -6,6 +6,7 @@ Overview of contents
 
 Directories:
  * __`cath-resolve-hits.performance_benchmark`__ Materials for benchmarking cath-resolve-hits
+ * __`delta_pdb_reduce`__                        A script for reducing test PDBs
  * __`generate_changelog`__                      A simple script for generating a changelog file for cath-tools from the release history via the Git API
  * __`homologue_discrimination_benchmark`__      A simple benchmark of homologue-discrimination (generates 3 plots: scatter, ROC & precision-recall)
  * __`notes`__	                                 Some notes on the development of cath-tools
