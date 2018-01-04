@@ -10,30 +10,34 @@ set border 3 back ls 11
 set tics nomirror
 set style line 12 lc rgb "#999999" lt 0 lw 1
 set grid back ls 12
-set key top right font "Helvetica,11"
-set key samplen 0.75
+set key top right font "Helvetica,10"
+set key samplen -3
+
 
 set multiplot layout 1,3 scale 1.128,1.02
 
 set xlabel 'False positives'
 set ylabel 'True positives' offset 3.5,0,0
-set xtics  0,0.05
+set xtics  0,0.01
 set ytics  0,0.05
-set xrange [0:0.05]
+set xrange [0:0.01]
 set yrange [0.75:1]
-set label 1 "   10% (hardest)"  at 0.0120759020527,  0.780690340934 font "Helvetica,9"
-set label 2 "   30%"            at 0.00988120581986, 0.857350417582 font "Helvetica,9"
-set label 3 "   60%"            at 0.00715748062087, 0.901690109678 font "Helvetica,9"
-set label 4 "   100% (easiest)" at 0.0035,           0.92           font "Helvetica,9"
-set label 5 "A" at graph 0.115, 0.935 center font "Helvetica,15"
-plot 'benchmark.df3_data.txt' using 3:2 with points pt 5 ps 0.5 lw 1.75 lc rgb "#808080" title 'DF3', 'benchmark.crh_data.txt' using 3:2 with points pt 2 ps 0.5 lw 1.75 lc rgb "#000000" title 'CRH'
+set object 1 circle at 0.00571839915,  0.852273081325 size scr 0.0375 fc rgb "#EEEEEE" fs solid
+set object 2 circle at 0.00328632275,  0.9277108644   size scr 0.0375 fc rgb "#EEEEEE" fs solid
+set object 3 circle at 0.001114264575, 0.9740195483   size scr 0.0375 fc rgb "#EEEEEE" fs solid
+#set label 1 "         10% (hardest)"  at 0.0120759020527,  0.780690340934 rotate by -90 font "Helvetica,9"
+set label 2 "         30% (hardest)"  at 0.00571839915,  0.852273081325 rotate by -90 font "Helvetica,9"
+set label 3 "         60%"            at 0.00328632275,  0.9277108644   rotate by -90 font "Helvetica,9"
+set label 4 "         100% (easiest)" at 0.001114264575, 0.9740195483   rotate by -90 font "Helvetica,9"
+set label 5 "A" at graph 0.5, 1.0 center font "Helvetica,15" offset 0, 0.5
+plot 'benchmark.df3_data.txt'            using 3:2 with points pt 5 ps 0.5 lw 1.75 lc rgb "#808080" title 'DF3', 'benchmark.crh_data.txt'            using 3:2 with points pt 2 ps 0.5 lw 1.75 lc rgb "#000000" title 'CRH', 'benchmark.crh_greedy_data.txt'     using 3:2 with points pt 4 ps 0.5 lw 1.75 lc rgb "#999999" title 'Greedy (trim)', 'benchmark.crh_greedy_1_0_data.txt' using 3:2 with points pt 6 ps 0.5 lw 1.75 lc rgb "#AAAAAA" title 'Greedy'
 
 unset label 1
 unset label 2
 unset label 3
 unset label 4
 unset label 5
-set label 6 "B" at graph 0.115, 0.935 center font "Helvetica,15"
+set label 6 "B" at graph 0.5, 1.0 center font "Helvetica,15" offset 0, 0.5
 set xlabel 'Num inputs'
 set ylabel 'CPU (minutes / 100k inputs)' offset 2.6,0,0
 set xtics  0,100000
@@ -48,7 +52,7 @@ E
 E
 
 unset label 6
-set label 7 "C" at graph 0.115, 0.935 center font "Helvetica,15"
+set label 7 "C" at graph 0.5, 1.0 center font "Helvetica,15" offset 0, 0.5
 
 set xlabel 'Num inputs'
 set ylabel 'Memory (Gbs  / 100k inputs)' offset 2.6,0,0
