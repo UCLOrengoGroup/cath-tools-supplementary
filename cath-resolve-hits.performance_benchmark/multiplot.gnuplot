@@ -37,6 +37,9 @@ unset label 2
 unset label 3
 unset label 4
 unset label 5
+unset object 1
+unset object 2
+unset object 3
 set label 6 "B" at graph 0.5, 1.0 center font "Helvetica,15" offset 0, 0.5
 set xlabel 'Num inputs'
 set ylabel 'CPU (minutes / 100k inputs)' offset 2.6,0,0
