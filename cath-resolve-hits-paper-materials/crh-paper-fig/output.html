@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>cath-resolve-hits</title>
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"
+	        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+	        crossorigin="anonymous"></script>
+
+	<script>
+
+		// Set $ to a no-op function in case jQuery doesn't load (for whatever reason)
+		if( typeof $ !== 'function' ) {
+			$ = function() {};
+		}
+
+		// Specify a function to execute when the document has loaded
+		$(function(){
+			var collapse_block_html = '&#8863; collapse inputs';
+			var expand_block_html   = '&#8862; expand inputs';
+			var collapse_all_html   = '&#8863; collapse all inputs';
+			var expand_all_html     = '&#8862; expand all inputs';
+
+			// Step through the results blocks
+			$('.crh-results-wrapper').each( function(idx, n) {
+
+				// Grab the nodes to hide (within this result block's wrapper)
+				var toggle_elements = $(this).find('.crh-row-input, .crh-row-colhead[data-crh-row-colhead-type="inputs"], .crh-row-subheading, .crh-exclusion-note');
+
+				// Create a link that toggles collapse/expand
+				var collapse_link = $("<a />").addClass( 'crh-ctrl-block-collapse-link' )
+				                              .html    ( collapse_block_html            );
+
+				// Add click events to the link
+				collapse_link.on( 'click', function() {
+					if ( toggle_elements.first().is(':visible') ) {
+						toggle_elements.hide( 0 );
+						$(this).html( expand_block_html )
+					}
+					else {
+						toggle_elements.show( 0 );
+						$(this).html( collapse_block_html )
+					}
+				});
+
+				// Add the link to the title
+				$(this).find('.crh-query-header').after( collapse_link );
+			});
+
+			// // Grab the nodes to hide (currently selecting elements inside the wrapper)
+			var toggle_elements = $('body').find('.crh-row-input, .crh-row-colhead[data-crh-row-colhead-type="inputs"], .crh-row-subheading, .crh-exclusion-note');
+
+			// Create a link that toggles collapse/expand
+			var collapse_link = $('<a />').addClass( 'crh-ctrl-global-collapse-link' )
+			                              .html    ( collapse_all_html               );
+
+			// Grab useful elements
+			var dummy_toggle_elt         = $( '.dummy-toggle-element' ).first();
+			var block_collapse_link_elts = $( '.crh-ctrl-block-collapse-link' );
+
+			// Add click events to the link
+			collapse_link.on( 'click', function() {
+				if ( dummy_toggle_elt.is(':visible') ) {
+					dummy_toggle_elt.hide();
+					toggle_elements.hide( 0 );
+					block_collapse_link_elts.html( expand_block_html );
+					$(this).html( expand_all_html );
+				}
+				else {
+					dummy_toggle_elt.show();
+					toggle_elements.show( 0 );
+					block_collapse_link_elts.html( collapse_block_html );
+					$(this).html( collapse_all_html );
+				}
+			});
+
+			// Add the link to the title
+			$( '.crh-results-wrapper' ).first().prev().before( collapse_link );
+		});
+
+	</script>
+</head>
+
+<body class="crh-body">
+
+<style>
+
+/* --- Start of simple reset --- */
+body.crh-body {
+	line-height       : 1.15;
+}
+body.crh-body table {
+	border-collapse   : separate;
+	border-spacing    : 4px;
+}
+/* --- End of simple reset --- */
+
+.crh-ctrl-block-collapse-link, .crh-ctrl-global-collapse-link {
+	font-size    : 80%;
+	opacity      : 0.6;
+	padding-left : 10px;
+	width        : 100%;
+}
+
+.crh-body {
+	background-color  : #e6e6e6;
+	font-family       : Helvetica, Arial, sans-serif;
+	font-size         : 90%;
+}
+
+.crh-results-wrapper {
+	background-color  : white;
+	border-radius     : 20px;
+	display           : inline-block;
+	margin            : 20px;
+	padding           : 20px;
+	padding-left      : 15px;
+}
+
+.crh-query-header {
+	margin            : 0px;
+}
+
+.crh-table {
+	text-align        : center;
+	width             : 100%;
+}
+
+.crh-table-subheading-first, .crh-table-subheading-later {
+	font-weight       : bolder;
+	padding-bottom    : 12px;
+	text-align        : center;
+}
+
+.crh-table-subheading-later {
+	padding-top       : 15px;
+}
+
+.crh-table-subheading-span {
+	background-color  : white;
+	border-color      : darkslateblue;
+	border-radius     : 7px;
+	border-style      : solid;
+	border-width      : 1px;
+	box-shadow        : inset 1px 1px 1px rgba(255,255,255,0.2);
+	color             : white;
+	font-size         : large;
+	padding           : 7px 12px 7px 12px;
+	text-shadow       : 2px 2px 1px rgba(0,0,0,0.2);
+}
+
+.crh-table-subheading-span-symb {
+	font-size         : 115%;
+}
+
+.crh-table-subheading-uparrow {
+	color             : #e6e6e6;
+	font-size         : 200%;
+}
+
+.crh-table-subheading-padding {
+	display           : inline-block;
+	width             : 75px;
+}
+
+.crh-row-input[data-crh-row-input-type="highlight"] {
+	font-weight       : bold;
+}
+
+.crh-row-result {
+	font-size         : 75%;
+}
+
+.crh-row-colhead {
+	font-weight       : bold;
+}
+
+.crh-row-soln-break {}
+
+.crh-cell-soln-break {}
+
+.crh-row-soln-break-uparrow {
+	color             : #e6e6e6;
+	font-size         : 133%;
+}
+
+.crh-row-soln-break-padding {
+	display           : inline-block;
+	width             : 17.5%;
+}
+
+.crh-cell {
+	padding           : 0 3px 0 3px;
+}
+
+.crh-cell-data {
+	font-family       : Courier, "Lucida Console", monospace;
+	font-size         : 85%;
+	color: white;
+}
+
+
+.crh-cell-first-norm, .crh-cell-first-highlight {
+	border-left-style : solid;
+	border-left-width : 7px;
+}
+
+.crh-cell-first-norm {
+	border-color      : transparent;
+}
+
+.crh-cell-first-highlight {
+	border-color      : white;
+}
+
+
+
+.crh-cell-colhead-figure {
+	font-weight       : normal;
+}
+
+
+.crh-figure-marker-num, .crh-figure-marker-tick, .crh-figure-tick {
+	position          : absolute;
+	width             : 2px;
+}
+
+
+.crh-figure-marker-tick, .crh-figure-tick, .crh-figure-div-line {
+	background-color  : #e6e6e6;
+}
+
+
+.crh-figure-marker-num {
+	color             : #a2a2a2;
+	font-size         : 65%;
+	height            : 11px;
+	margin-top        : -2px;
+}
+
+.crh-figure-marker-tick {
+	height            : 8px;
+	margin-left       : -1px;
+	margin-top        : 12px;
+}
+
+.crh-figure-tick {
+	height            : 11px;
+	margin-left       : -1px;
+	margin-top        : -4px;
+}
+
+
+.crh-figure-div-empty, .crh-figure-div-line {
+	margin-left       : 10px;
+	position          : relative;
+	width             : 550px;
+}
+
+.crh-figure-div-empty {
+	background-color  : transparent;
+	height            : 20px;
+}
+
+.crh-figure-div-line {
+	height            : 3px;
+}
+
+.crh-hit-pill-core, .crh-hit-pill-ends, .crh-hit-boundary {
+	box-shadow        : 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.crh-hit-pill-core, .crh-hit-pill-ends, .crh-hit-pill-tail {
+	border-radius     : 5px;
+	border-style      : solid;
+	border-width      : 1px;
+	position          : absolute;
+}
+
+.crh-hit-pill-ends, .crh-hit-pill-tail {
+	height            : 5px;
+	margin-top        : -2px;
+}
+
+.crh-hit-pill-tail {
+	border-color      : #888;
+	border-style      : dotted;
+	z-index           : 2;
+}
+
+.crh-hit-boundary {
+	height            : 11px;
+	margin-top        : -4px;
+	position          : absolute;
+	width             : 2px;
+	z-index           : 6;
+}
+
+.crh-hit-pill-ends {
+	z-index           : 4;
+}
+
+.crh-hit-pill-core {
+	height            : 7px;
+	margin-top        : -3px;
+	z-index           : 8;
+}
+
+.crh-chopping-region-text { }
+
+.crh-key-div {
+	font-size         : 75%;
+}
+
+.crh-key-header {
+	padding-top       : 10px;
+}
+
+.crh-advert-div {
+	font-size         : 70%;
+	opacity           : 0.6;
+	position          : relative;
+}
+
+.crh-advert-span {
+	position          : absolute;
+	right             : -6px;
+	top               : -6px;
+}
+
+.crh-exclusion-note {
+	color             : #777;
+	font-size         : 80%;
+	padding           : 15px 0 0 40px;
+}
+
+</style>
+
+<br /> <!-- This is required before the wrapper for providing a break after the expand/collapse link -->
+<div class="crh-results-wrapper">
+
+<div class="crh-advert-div">
+	<span class="crh-advert-span">
+		Generated by <a href="http://cath-tools.readthedocs.io/en/latest/tools/cath-resolve-hits/">cath-resolve-hits</a>,
+		one of the <a href="https://github.com/UCLOrengoGroup/cath-tools">cath-tools</a>
+	</span>
+</div>
+
+<h3 class="crh-query-header">a</h3>
+<table class="crh-table">
+
+
+<tr class="crh-row-colhead" data-crh-row-colhead-type="inputs">
+	<td class="crh-cell crh-cell-first-norm"></td>
+	<!-- <td class="crh-cell crh-cell-colhead-figure">
+		<div class="crh-figure-div-empty">
+		<span class="crh-figure-marker-num" style="left: 0.000000%; margin-left: -2px;">0</span>
+		<span class="crh-figure-marker-tick" style="left: 0.000000%;"></span>
+		<span class="crh-figure-marker-num" style="left: 16.666667%; margin-left: -4px;">20</span>
+		<span class="crh-figure-marker-tick" style="left: 16.666667%;"></span>
+		<span class="crh-figure-marker-num" style="left: 33.333333%; margin-left: -4px;">40</span>
+		<span class="crh-figure-marker-tick" style="left: 33.333333%;"></span>
+		<span class="crh-figure-marker-num" style="left: 50.000000%; margin-left: -4px;">60</span>
+		<span class="crh-figure-marker-tick" style="left: 50.000000%;"></span>
+		<span class="crh-figure-marker-num" style="left: 66.666667%; margin-left: -4px;">80</span>
+		<span class="crh-figure-marker-tick" style="left: 66.666667%;"></span>
+		<span class="crh-figure-marker-num" style="left: 83.333333%; margin-left: -7px;">100</span>
+		<span class="crh-figure-marker-tick" style="left: 83.333333%;"></span>
+		<span class="crh-figure-marker-num" style="left: 100.000000%; margin-left: -7px;">120</span>
+		<span class="crh-figure-marker-tick" style="left: 100.000000%;"></span>
+		</div>
+	</td>
+	<td class="crh-cell">Calc Score</td>
+	<td class="crh-cell">Crh-value</td>
+	<td class="crh-cell">Regions</td>
+	<td class="crh-cell">Length</td> -->
+</tr>
+
+<tr class="crh-row-input" data-crh-row-input-type="normal">
+	<td class="crh-cell crh-cell-data crh-cell-first-norm">
+		b
+	</td>
+	<!-- <td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit1" data-crh-hit-match-id="b" data-crh-hit-boundaries="119-120" data-crh-hit-score="59.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="119-120" style="background-color: #77f; border-color: #338; left: 98.333333%; width: 1.666667%;"></span> 
+		</div>
+	</td> -->
+	<td class="crh-cell crh-cell-data">59</td>
+	<td class="crh-cell crh-cell-data">59</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		2
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="normal">
+	<td class="crh-cell crh-cell-data crh-cell-first-norm">
+		b
+	</td>
+	<!-- <td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit2" data-crh-hit-match-id="b" data-crh-hit-boundaries="119-120" data-crh-hit-score="58.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="119-120" style="background-color: #77f; border-color: #338; left: 98.333333%; width: 1.666667%;"></span> 
+		</div>
+	</td> -->
+	<td class="crh-cell crh-cell-data">58</td>
+	<td class="crh-cell crh-cell-data">58</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		2
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="normal">
+	<td class="crh-cell crh-cell-data crh-cell-first-norm">
+		b
+	</td>
+	<!-- <td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit3" data-crh-hit-match-id="b" data-crh-hit-boundaries="119-120" data-crh-hit-score="57.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="119-120" style="background-color: #77f; border-color: #338; left: 98.333333%; width: 1.666667%;"></span> 
+		</div>
+	</td> -->
+	<td class="crh-cell crh-cell-data">57</td>
+	<td class="crh-cell crh-cell-data">57</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		2
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="normal">
+	<td class="crh-cell crh-cell-data crh-cell-first-norm">
+		b
+	</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-tail" data-crh-hit-id="batch1-hit4" data-crh-hit-match-id="b" data-crh-hit-boundaries="30-43, 77-90" data-crh-hit-score="56.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="30-43" style="background-color: #ffffff; left: 24.166667%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit4" data-crh-hit-match-id="b" data-crh-hit-boundaries="30-43, 77-90" data-crh-hit-score="56.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="30-43" style="background-color: #77f; border-color: #338; left: 24.166667%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-core" data-crh-hit-id="batch1-hit4" data-crh-hit-match-id="b" data-crh-hit-boundaries="30-43, 77-90" data-crh-hit-score="56.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="30-43" style="background-color: #77f; border-color: #338; left: 24.166667%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-tail" data-crh-hit-id="batch1-hit4" data-crh-hit-match-id="b" data-crh-hit-boundaries="30-43, 77-90" data-crh-hit-score="56.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="77-90" style="background-color: #ffffff; left: 63.333333%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit4" data-crh-hit-match-id="b" data-crh-hit-boundaries="30-43, 77-90" data-crh-hit-score="56.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="77-90" style="background-color: #77f; border-color: #338; left: 63.333333%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-core" data-crh-hit-id="batch1-hit4" data-crh-hit-match-id="b" data-crh-hit-boundaries="30-43, 77-90" data-crh-hit-score="56.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="77-90" style="background-color: #77f; border-color: #338; left: 63.333333%; width: 11.666667%;"></span>
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">56</td>
+	<td class="crh-cell crh-cell-data">56</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		28
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="normal">
+	<td class="crh-cell crh-cell-data crh-cell-first-norm">
+		b
+	</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-tail" data-crh-hit-id="batch1-hit5" data-crh-hit-match-id="b" data-crh-hit-boundaries="45-75" data-crh-hit-score="55.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="45-75" style="background-color: #ffffff; left: 36.666667%; width: 25.833333%;"></span>
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit5" data-crh-hit-match-id="b" data-crh-hit-boundaries="45-75" data-crh-hit-score="55.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="45-75" style="background-color: #77f; border-color: #338; left: 36.666667%; width: 25.833333%;"></span>
+		<span class="crh-hit-pill-core" data-crh-hit-id="batch1-hit5" data-crh-hit-match-id="b" data-crh-hit-boundaries="45-75" data-crh-hit-score="55.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="45-75" style="background-color: #77f; border-color: #338; left: 36.666667%; width: 25.833333%;"></span>
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">55</td>
+	<td class="crh-cell crh-cell-data">55</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		31
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="normal">
+	<td class="crh-cell crh-cell-data crh-cell-first-norm">
+		b
+	</td>
+	<!-- <td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit6" data-crh-hit-match-id="b" data-crh-hit-boundaries="119-120" data-crh-hit-score="54.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="119-120" style="background-color: #77f; border-color: #338; left: 98.333333%; width: 1.666667%;"></span> 
+		</div>
+	</td> -->
+	<td class="crh-cell crh-cell-data">54</td>
+	<td class="crh-cell crh-cell-data">54</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		2
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="normal">
+	<td class="crh-cell crh-cell-data crh-cell-first-norm">
+		b
+	</td>
+	<!-- <td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit7" data-crh-hit-match-id="b" data-crh-hit-boundaries="119-120" data-crh-hit-score="53.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="119-120" style="background-color: #77f; border-color: #338; left: 98.333333%; width: 1.666667%;"></span> 
+		</div>
+	</td> -->
+	<td class="crh-cell crh-cell-data">53</td>
+	<td class="crh-cell crh-cell-data">53</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		2
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="normal">
+	<td class="crh-cell crh-cell-data crh-cell-first-norm">
+		b
+	</td>
+	<!-- <td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit8" data-crh-hit-match-id="b" data-crh-hit-boundaries="119-120" data-crh-hit-score="52.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="119-120" style="background-color: #77f; border-color: #338; left: 98.333333%; width: 1.666667%;"></span> 
+		</div>
+	</td> -->
+	<td class="crh-cell crh-cell-data">52</td>
+	<td class="crh-cell crh-cell-data">52</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		2
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="normal">
+	<td class="crh-cell crh-cell-data crh-cell-first-norm">
+		b
+	</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-tail" data-crh-hit-id="batch1-hit9" data-crh-hit-match-id="b" data-crh-hit-boundaries="15-28, 92-105" data-crh-hit-score="51.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="15-28" style="background-color: #ffffff; left: 11.666667%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit9" data-crh-hit-match-id="b" data-crh-hit-boundaries="15-28, 92-105" data-crh-hit-score="51.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="15-28" style="background-color: #77f; border-color: #338; left: 11.666667%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-core" data-crh-hit-id="batch1-hit9" data-crh-hit-match-id="b" data-crh-hit-boundaries="15-28, 92-105" data-crh-hit-score="51.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="15-28" style="background-color: #77f; border-color: #338; left: 11.666667%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-tail" data-crh-hit-id="batch1-hit9" data-crh-hit-match-id="b" data-crh-hit-boundaries="15-28, 92-105" data-crh-hit-score="51.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="92-105" style="background-color: #ffffff; left: 75.833333%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit9" data-crh-hit-match-id="b" data-crh-hit-boundaries="15-28, 92-105" data-crh-hit-score="51.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="92-105" style="background-color: #77f; border-color: #338; left: 75.833333%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-core" data-crh-hit-id="batch1-hit9" data-crh-hit-match-id="b" data-crh-hit-boundaries="15-28, 92-105" data-crh-hit-score="51.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="92-105" style="background-color: #77f; border-color: #338; left: 75.833333%; width: 11.666667%;"></span>
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">51</td>
+	<td class="crh-cell crh-cell-data">51</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		28
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="normal">
+	<td class="crh-cell crh-cell-data crh-cell-first-norm">
+		b
+	</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-tail" data-crh-hit-id="batch1-hit10" data-crh-hit-match-id="b" data-crh-hit-boundaries="30-43, 77-90" data-crh-hit-score="50.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="30-43" style="background-color: #ffffff; left: 24.166667%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit10" data-crh-hit-match-id="b" data-crh-hit-boundaries="30-43, 77-90" data-crh-hit-score="50.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="30-43" style="background-color: #77f; border-color: #338; left: 24.166667%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-core" data-crh-hit-id="batch1-hit10" data-crh-hit-match-id="b" data-crh-hit-boundaries="30-43, 77-90" data-crh-hit-score="50.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="30-43" style="background-color: #77f; border-color: #338; left: 24.166667%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-tail" data-crh-hit-id="batch1-hit10" data-crh-hit-match-id="b" data-crh-hit-boundaries="30-43, 77-90" data-crh-hit-score="50.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="77-90" style="background-color: #ffffff; left: 63.333333%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit10" data-crh-hit-match-id="b" data-crh-hit-boundaries="30-43, 77-90" data-crh-hit-score="50.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="77-90" style="background-color: #77f; border-color: #338; left: 63.333333%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-core" data-crh-hit-id="batch1-hit10" data-crh-hit-match-id="b" data-crh-hit-boundaries="30-43, 77-90" data-crh-hit-score="50.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="77-90" style="background-color: #77f; border-color: #338; left: 63.333333%; width: 11.666667%;"></span>
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">50</td>
+	<td class="crh-cell crh-cell-data">50</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		28
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="normal">
+	<td class="crh-cell crh-cell-data crh-cell-first-norm">
+		b
+	</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-tail" data-crh-hit-id="batch1-hit11" data-crh-hit-match-id="b" data-crh-hit-boundaries="45-75" data-crh-hit-score="49.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="45-75" style="background-color: #ffffff; left: 36.666667%; width: 25.833333%;"></span>
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit11" data-crh-hit-match-id="b" data-crh-hit-boundaries="45-75" data-crh-hit-score="49.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="45-75" style="background-color: #77f; border-color: #338; left: 36.666667%; width: 25.833333%;"></span>
+		<span class="crh-hit-pill-core" data-crh-hit-id="batch1-hit11" data-crh-hit-match-id="b" data-crh-hit-boundaries="45-75" data-crh-hit-score="49.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="45-75" style="background-color: #77f; border-color: #338; left: 36.666667%; width: 25.833333%;"></span>
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">49</td>
+	<td class="crh-cell crh-cell-data">49</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		31
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="normal">
+	<td class="crh-cell crh-cell-data crh-cell-first-norm">
+		b
+	</td>
+	<!-- <td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit12" data-crh-hit-match-id="b" data-crh-hit-boundaries="119-120" data-crh-hit-score="48.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="119-120" style="background-color: #77f; border-color: #338; left: 98.333333%; width: 1.666667%;"></span> 
+		</div>
+	</td> -->
+	<td class="crh-cell crh-cell-data">48</td>
+	<td class="crh-cell crh-cell-data">48</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		2
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="normal">
+	<td class="crh-cell crh-cell-data crh-cell-first-norm">
+		b
+	</td>
+	<!-- <td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit13" data-crh-hit-match-id="b" data-crh-hit-boundaries="119-120" data-crh-hit-score="47.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="119-120" style="background-color: #77f; border-color: #338; left: 98.333333%; width: 1.666667%;"></span> 
+		</div>
+	</td> -->
+	<td class="crh-cell crh-cell-data">47</td>
+	<td class="crh-cell crh-cell-data">47</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		2
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="normal">
+	<td class="crh-cell crh-cell-data crh-cell-first-norm">
+		b
+	</td>
+	<!-- <td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit14" data-crh-hit-match-id="b" data-crh-hit-boundaries="119-120" data-crh-hit-score="46.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="119-120" style="background-color: #77f; border-color: #338; left: 98.333333%; width: 1.666667%;"></span> 
+		</div>
+	</td> -->
+	<td class="crh-cell crh-cell-data">46</td>
+	<td class="crh-cell crh-cell-data">46</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		2
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="normal">
+	<td class="crh-cell crh-cell-data crh-cell-first-norm">
+		b
+	</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-tail" data-crh-hit-id="batch1-hit15" data-crh-hit-match-id="b" data-crh-hit-boundaries="15-28, 45-75, 92-105" data-crh-hit-score="45.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="15-28" style="background-color: #ffffff; left: 11.666667%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit15" data-crh-hit-match-id="b" data-crh-hit-boundaries="15-28, 45-75, 92-105" data-crh-hit-score="45.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="15-28" style="background-color: #77f; border-color: #338; left: 11.666667%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-core" data-crh-hit-id="batch1-hit15" data-crh-hit-match-id="b" data-crh-hit-boundaries="15-28, 45-75, 92-105" data-crh-hit-score="45.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="15-28" style="background-color: #77f; border-color: #338; left: 11.666667%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-tail" data-crh-hit-id="batch1-hit15" data-crh-hit-match-id="b" data-crh-hit-boundaries="15-28, 45-75, 92-105" data-crh-hit-score="45.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="45-75" style="background-color: #ffffff; left: 36.666667%; width: 25.833333%;"></span>
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit15" data-crh-hit-match-id="b" data-crh-hit-boundaries="15-28, 45-75, 92-105" data-crh-hit-score="45.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="45-75" style="background-color: #77f; border-color: #338; left: 36.666667%; width: 25.833333%;"></span>
+		<span class="crh-hit-pill-core" data-crh-hit-id="batch1-hit15" data-crh-hit-match-id="b" data-crh-hit-boundaries="15-28, 45-75, 92-105" data-crh-hit-score="45.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="45-75" style="background-color: #77f; border-color: #338; left: 36.666667%; width: 25.833333%;"></span>
+		<span class="crh-hit-pill-tail" data-crh-hit-id="batch1-hit15" data-crh-hit-match-id="b" data-crh-hit-boundaries="15-28, 45-75, 92-105" data-crh-hit-score="45.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="3" data-crh-seg-boundaries="92-105" style="background-color: #ffffff; left: 75.833333%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit15" data-crh-hit-match-id="b" data-crh-hit-boundaries="15-28, 45-75, 92-105" data-crh-hit-score="45.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="3" data-crh-seg-boundaries="92-105" style="background-color: #77f; border-color: #338; left: 75.833333%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-core" data-crh-hit-id="batch1-hit15" data-crh-hit-match-id="b" data-crh-hit-boundaries="15-28, 45-75, 92-105" data-crh-hit-score="45.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="3" data-crh-seg-boundaries="92-105" style="background-color: #77f; border-color: #338; left: 75.833333%; width: 11.666667%;"></span>
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">45</td>
+	<td class="crh-cell crh-cell-data">45</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		59
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="normal">
+	<td class="crh-cell crh-cell-data crh-cell-first-norm">
+		b
+	</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-tail" data-crh-hit-id="batch1-hit16" data-crh-hit-match-id="b" data-crh-hit-boundaries="30-43, 77-90" data-crh-hit-score="44.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="30-43" style="background-color: #ffffff; left: 24.166667%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit16" data-crh-hit-match-id="b" data-crh-hit-boundaries="30-43, 77-90" data-crh-hit-score="44.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="30-43" style="background-color: #77f; border-color: #338; left: 24.166667%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-core" data-crh-hit-id="batch1-hit16" data-crh-hit-match-id="b" data-crh-hit-boundaries="30-43, 77-90" data-crh-hit-score="44.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="30-43" style="background-color: #77f; border-color: #338; left: 24.166667%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-tail" data-crh-hit-id="batch1-hit16" data-crh-hit-match-id="b" data-crh-hit-boundaries="30-43, 77-90" data-crh-hit-score="44.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="77-90" style="background-color: #ffffff; left: 63.333333%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit16" data-crh-hit-match-id="b" data-crh-hit-boundaries="30-43, 77-90" data-crh-hit-score="44.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="77-90" style="background-color: #77f; border-color: #338; left: 63.333333%; width: 11.666667%;"></span>
+		<span class="crh-hit-pill-core" data-crh-hit-id="batch1-hit16" data-crh-hit-match-id="b" data-crh-hit-boundaries="30-43, 77-90" data-crh-hit-score="44.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="77-90" style="background-color: #77f; border-color: #338; left: 63.333333%; width: 11.666667%;"></span>
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">44</td>
+	<td class="crh-cell crh-cell-data">44</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		28
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="normal">
+	<td class="crh-cell crh-cell-data crh-cell-first-norm">
+		b
+	</td>
+	<!-- <td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit17" data-crh-hit-match-id="b" data-crh-hit-boundaries="119-120" data-crh-hit-score="43.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="119-120" style="background-color: #77f; border-color: #338; left: 98.333333%; width: 1.666667%;"></span> 
+		</div>
+	</td> -->
+	<td class="crh-cell crh-cell-data">43</td>
+	<td class="crh-cell crh-cell-data">43</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		2
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="normal">
+	<td class="crh-cell crh-cell-data crh-cell-first-norm">
+		b
+	</td>
+	<!-- <td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit18" data-crh-hit-match-id="b" data-crh-hit-boundaries="119-120" data-crh-hit-score="42.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="119-120" style="background-color: #77f; border-color: #338; left: 98.333333%; width: 1.666667%;"></span> 
+		</div>
+	</td> -->
+	<td class="crh-cell crh-cell-data">42</td>
+	<td class="crh-cell crh-cell-data">42</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		2
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="normal">
+	<td class="crh-cell crh-cell-data crh-cell-first-norm">
+		b
+	</td>
+	<!-- <td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit19" data-crh-hit-match-id="b" data-crh-hit-boundaries="119-120" data-crh-hit-score="41.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="119-120" style="background-color: #77f; border-color: #338; left: 98.333333%; width: 1.666667%;"></span> 
+		</div>
+	</td> -->
+	<td class="crh-cell crh-cell-data">41</td>
+	<td class="crh-cell crh-cell-data">41</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		2
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="highlight">
+	<td class="crh-cell crh-cell-data crh-cell-first-highlight">
+		b
+	</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-tail" data-crh-hit-id="batch1-hit20" data-crh-hit-match-id="b" data-crh-hit-boundaries="10-19, 30-39" data-crh-hit-score="40.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="10-19" style="background-color: #ffffff; left: 7.500000%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit20" data-crh-hit-match-id="b" data-crh-hit-boundaries="10-19, 30-39" data-crh-hit-score="40.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="10-19" style="background-color: #77f; border-color: #338; left: 7.500000%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-core" data-crh-hit-id="batch1-hit20" data-crh-hit-match-id="b" data-crh-hit-boundaries="10-19, 30-39" data-crh-hit-score="40.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="10-19" style="background-color: #77f; border-color: #338; left: 7.500000%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-tail" data-crh-hit-id="batch1-hit20" data-crh-hit-match-id="b" data-crh-hit-boundaries="10-19, 30-39" data-crh-hit-score="40.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="30-39" style="background-color: #ffffff; left: 24.166667%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit20" data-crh-hit-match-id="b" data-crh-hit-boundaries="10-19, 30-39" data-crh-hit-score="40.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="30-39" style="background-color: #77f; border-color: #338; left: 24.166667%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-core" data-crh-hit-id="batch1-hit20" data-crh-hit-match-id="b" data-crh-hit-boundaries="10-19, 30-39" data-crh-hit-score="40.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="30-39" style="background-color: #77f; border-color: #338; left: 24.166667%; width: 8.333333%;"></span>
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">40</td>
+	<td class="crh-cell crh-cell-data">40</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		20
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="highlight">
+	<td class="crh-cell crh-cell-data crh-cell-first-highlight">
+		b
+	</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-tail" data-crh-hit-id="batch1-hit21" data-crh-hit-match-id="b" data-crh-hit-boundaries="20-29, 50-59" data-crh-hit-score="39.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="20-29" style="background-color: #ffffff; left: 15.833333%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit21" data-crh-hit-match-id="b" data-crh-hit-boundaries="20-29, 50-59" data-crh-hit-score="39.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="20-29" style="background-color: #77f; border-color: #338; left: 15.833333%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-core" data-crh-hit-id="batch1-hit21" data-crh-hit-match-id="b" data-crh-hit-boundaries="20-29, 50-59" data-crh-hit-score="39.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="20-29" style="background-color: #77f; border-color: #338; left: 15.833333%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-tail" data-crh-hit-id="batch1-hit21" data-crh-hit-match-id="b" data-crh-hit-boundaries="20-29, 50-59" data-crh-hit-score="39.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="50-59" style="background-color: #ffffff; left: 40.833333%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit21" data-crh-hit-match-id="b" data-crh-hit-boundaries="20-29, 50-59" data-crh-hit-score="39.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="50-59" style="background-color: #77f; border-color: #338; left: 40.833333%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-core" data-crh-hit-id="batch1-hit21" data-crh-hit-match-id="b" data-crh-hit-boundaries="20-29, 50-59" data-crh-hit-score="39.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="50-59" style="background-color: #77f; border-color: #338; left: 40.833333%; width: 8.333333%;"></span>
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">39</td>
+	<td class="crh-cell crh-cell-data">39</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		20
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="highlight">
+	<td class="crh-cell crh-cell-data crh-cell-first-highlight">
+		b
+	</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-tail" data-crh-hit-id="batch1-hit22" data-crh-hit-match-id="b" data-crh-hit-boundaries="40-49, 70-79" data-crh-hit-score="38.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="40-49" style="background-color: #ffffff; left: 32.500000%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit22" data-crh-hit-match-id="b" data-crh-hit-boundaries="40-49, 70-79" data-crh-hit-score="38.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="40-49" style="background-color: #77f; border-color: #338; left: 32.500000%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-core" data-crh-hit-id="batch1-hit22" data-crh-hit-match-id="b" data-crh-hit-boundaries="40-49, 70-79" data-crh-hit-score="38.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="40-49" style="background-color: #77f; border-color: #338; left: 32.500000%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-tail" data-crh-hit-id="batch1-hit22" data-crh-hit-match-id="b" data-crh-hit-boundaries="40-49, 70-79" data-crh-hit-score="38.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="70-79" style="background-color: #ffffff; left: 57.500000%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit22" data-crh-hit-match-id="b" data-crh-hit-boundaries="40-49, 70-79" data-crh-hit-score="38.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="70-79" style="background-color: #77f; border-color: #338; left: 57.500000%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-core" data-crh-hit-id="batch1-hit22" data-crh-hit-match-id="b" data-crh-hit-boundaries="40-49, 70-79" data-crh-hit-score="38.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="70-79" style="background-color: #77f; border-color: #338; left: 57.500000%; width: 8.333333%;"></span>
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">38</td>
+	<td class="crh-cell crh-cell-data">38</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		20
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="highlight">
+	<td class="crh-cell crh-cell-data crh-cell-first-highlight">
+		b
+	</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-tail" data-crh-hit-id="batch1-hit23" data-crh-hit-match-id="b" data-crh-hit-boundaries="60-69, 90-99" data-crh-hit-score="37.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="60-69" style="background-color: #ffffff; left: 49.166667%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit23" data-crh-hit-match-id="b" data-crh-hit-boundaries="60-69, 90-99" data-crh-hit-score="37.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="60-69" style="background-color: #77f; border-color: #338; left: 49.166667%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-core" data-crh-hit-id="batch1-hit23" data-crh-hit-match-id="b" data-crh-hit-boundaries="60-69, 90-99" data-crh-hit-score="37.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="60-69" style="background-color: #77f; border-color: #338; left: 49.166667%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-tail" data-crh-hit-id="batch1-hit23" data-crh-hit-match-id="b" data-crh-hit-boundaries="60-69, 90-99" data-crh-hit-score="37.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="90-99" style="background-color: #ffffff; left: 74.166667%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit23" data-crh-hit-match-id="b" data-crh-hit-boundaries="60-69, 90-99" data-crh-hit-score="37.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="90-99" style="background-color: #77f; border-color: #338; left: 74.166667%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-core" data-crh-hit-id="batch1-hit23" data-crh-hit-match-id="b" data-crh-hit-boundaries="60-69, 90-99" data-crh-hit-score="37.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="90-99" style="background-color: #77f; border-color: #338; left: 74.166667%; width: 8.333333%;"></span>
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">37</td>
+	<td class="crh-cell crh-cell-data">37</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		20
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="highlight">
+	<td class="crh-cell crh-cell-data crh-cell-first-highlight">
+		b
+	</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-tail" data-crh-hit-id="batch1-hit24" data-crh-hit-match-id="b" data-crh-hit-boundaries="80-89, 100-109" data-crh-hit-score="36.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="80-89" style="background-color: #ffffff; left: 65.833333%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit24" data-crh-hit-match-id="b" data-crh-hit-boundaries="80-89, 100-109" data-crh-hit-score="36.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="80-89" style="background-color: #77f; border-color: #338; left: 65.833333%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-core" data-crh-hit-id="batch1-hit24" data-crh-hit-match-id="b" data-crh-hit-boundaries="80-89, 100-109" data-crh-hit-score="36.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="80-89" style="background-color: #77f; border-color: #338; left: 65.833333%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-tail" data-crh-hit-id="batch1-hit24" data-crh-hit-match-id="b" data-crh-hit-boundaries="80-89, 100-109" data-crh-hit-score="36.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="100-109" style="background-color: #ffffff; left: 82.500000%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit24" data-crh-hit-match-id="b" data-crh-hit-boundaries="80-89, 100-109" data-crh-hit-score="36.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="100-109" style="background-color: #77f; border-color: #338; left: 82.500000%; width: 8.333333%;"></span>
+		<span class="crh-hit-pill-core" data-crh-hit-id="batch1-hit24" data-crh-hit-match-id="b" data-crh-hit-boundaries="80-89, 100-109" data-crh-hit-score="36.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="2" data-crh-seg-boundaries="100-109" style="background-color: #77f; border-color: #338; left: 82.500000%; width: 8.333333%;"></span>
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">36</td>
+	<td class="crh-cell crh-cell-data">36</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		20
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="normal">
+	<td class="crh-cell crh-cell-data crh-cell-first-norm">
+		b
+	</td>
+	<!-- <td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit25" data-crh-hit-match-id="b" data-crh-hit-boundaries="119-120" data-crh-hit-score="35.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="119-120" style="background-color: #77f; border-color: #338; left: 98.333333%; width: 1.666667%;"></span> 
+		</div>
+	</td> -->
+	<td class="crh-cell crh-cell-data">35</td>
+	<td class="crh-cell crh-cell-data">35</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		2
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="normal">
+	<td class="crh-cell crh-cell-data crh-cell-first-norm">
+		b
+	</td>
+	<!-- <td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit26" data-crh-hit-match-id="b" data-crh-hit-boundaries="119-120" data-crh-hit-score="34.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="119-120" style="background-color: #77f; border-color: #338; left: 98.333333%; width: 1.666667%;"></span> 
+		</div>
+	</td> -->
+	<td class="crh-cell crh-cell-data">34</td>
+	<td class="crh-cell crh-cell-data">34</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		2
+	</td>
+</tr>
+<tr class="crh-row-input" data-crh-row-input-type="normal">
+	<td class="crh-cell crh-cell-data crh-cell-first-norm">
+		b
+	</td>
+	<!-- <td class="crh-cell crh-cell-data">
+		<div class="crh-figure-div-line">
+		<span class="crh-figure-tick" style="left: 0.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 16.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 33.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 50.000000%;"></span> 
+		<span class="crh-figure-tick" style="left: 66.666667%;"></span> 
+		<span class="crh-figure-tick" style="left: 83.333333%;"></span> 
+		<span class="crh-figure-tick" style="left: 100.000000%;"></span> 
+		<span class="crh-hit-pill-ends" data-crh-hit-id="batch1-hit27" data-crh-hit-match-id="b" data-crh-hit-boundaries="119-120" data-crh-hit-score="33.000000" data-crh-hit-score-type="crh-value" data-crh-seg-num="1" data-crh-seg-boundaries="119-120" style="background-color: #77f; border-color: #338; left: 98.333333%; width: 1.666667%;"></span> 
+		</div>
+	</td> -->
+	<td class="crh-cell crh-cell-data">33</td>
+	<td class="crh-cell crh-cell-data">33</td>
+	<td class="crh-cell crh-cell-data">
+		<div class="scan-result-regions">
+		</div>
+	</td>
+	<td class="crh-cell crh-cell-data">
+		2
+	</td>
+</tr>
+</table>
+
+</div>
+
+
+<div class="crh-key-div">
+
+<h3 class="crh-key-header">Key</h3>
+<ul>
+	<li><strong>ends   </strong> : The pale ends of the segments represent the trimmed regions that cath-resolve-hits may let overlap. Segments shorter than the min-seg-length are shown all pale.</li>
+	<li><strong>colours</strong> : The hits' colours represent their calculation score: red is 0; green is the best score in the input hits (which may nevertheless be a &quot;bad&quot; hit).</li>
+	<li><strong>grey</strong>    : Grey hits represent hits with scores that have not met the --worst-permissible-[...] filters.</li>
+</ul>
+</div>
+
+
+<!-- Used to store the current global visibility for collapse/expand all -->
+<a class="dummy-toggle-element" />
+
+</body>
+
+</html>
